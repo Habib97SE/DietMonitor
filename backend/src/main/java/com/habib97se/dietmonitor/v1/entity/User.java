@@ -1,6 +1,10 @@
-package com.habib97se.dietmonitor.v1.controllers.entities;
+package com.habib97se.dietmonitor.v1.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+
 
 import java.util.Date;
 
@@ -9,14 +13,52 @@ import java.util.Date;
 @Table(name ="users")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, length = 50)
+    @NotBlank(message = "First name is required")
     private String firstName;
+
+    @Column(nullable = false, length = 50)
+    @NotBlank(message = "Last name is required")
     private String lastName;
+
+    @Column(nullable = false, length = 100, unique = true)
+    @Email(message = "Invalid email")
+    @NotBlank(message = "Email is required")
     private String email;
+
+    @Column(nullable = false, length = 15)
+    @NotBlank(message = "Phone number is required")
     private String phoneNumber;
+
+    @Column(nullable = false)
+    @NotBlank(message = "Country is required")
+    private String country;
+
+    @Column(nullable = false)
+    @NotBlank(message = "City is required")
+    private String city;
+
+
+    @Column(nullable = false)
+    @NotBlank(message = "Password is required")
     private String hashedPassword;
+
+    @Column(nullable = false)
     private String salt;
+
+    @Column(nullable = false)
+    @PastOrPresent(message = "Invalid date of birth")
     private Date dateOfBirth;
+
+    @Column(nullable = false)
+    @PastOrPresent(message = "Invalid date")
+    private Date createdAt;
+
+    @Column(nullable = true)
+    private Date updatedAt;
 
     public User() {
     }
@@ -30,6 +72,18 @@ public class User {
         this.hashedPassword = hashedPassword;
         this.salt = salt;
         this.dateOfBirth = dateOfBirth;
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
     }
 
     public Long getId() {
@@ -94,6 +148,18 @@ public class User {
 
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override
