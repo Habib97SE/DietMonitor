@@ -1,5 +1,6 @@
 package com.habib97se.dietmonitor.v1.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +8,6 @@ import jakarta.validation.constraints.PastOrPresent;
 
 
 import java.util.Date;
-
 
 @Entity
 @Table(name ="users")
@@ -41,12 +41,16 @@ public class User {
     @NotBlank(message = "City is required")
     private String city;
 
+    @Column(nullable = false)
+    @NotBlank(message = "Gender is required")
+    private String gender;
 
     @Column(nullable = false)
     @NotBlank(message = "Password is required")
     private String hashedPassword;
 
     @Column(nullable = false)
+    @NotBlank(message = "Salt is required")
     private String salt;
 
     @Column(nullable = false)
@@ -63,8 +67,7 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String firstName, String lastName, String email, String phoneNumber, String hashedPassword, String salt, Date dateOfBirth) {
-        this.id = id;
+    public User(String firstName, String lastName, String email, String phoneNumber, String hashedPassword, String salt, Date dateOfBirth, String country, String city, String gender) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -72,8 +75,9 @@ public class User {
         this.hashedPassword = hashedPassword;
         this.salt = salt;
         this.dateOfBirth = dateOfBirth;
-        this.createdAt = new Date();
-        this.updatedAt = new Date();
+        this.country = country;
+        this.city = city;
+        this.gender = gender;
     }
 
     @PrePersist
@@ -148,6 +152,30 @@ public class User {
 
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getGender() {
+        return this.gender;
+    }
+
+    public void setGender (String gender) {
+        this.gender = gender;
     }
 
     public Date getCreatedAt() {

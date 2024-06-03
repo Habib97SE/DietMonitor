@@ -1,7 +1,8 @@
 package com.habib97se.dietmonitor.v1.controller;
 
+import com.habib97se.dietmonitor.v1.DTO.RegisterRequest;
 import com.habib97se.dietmonitor.v1.service.UserService;
-import com.habib97se.dietmonitor.DTO.LoginRequest;
+import com.habib97se.dietmonitor.v1.DTO.LoginRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,6 @@ import com.habib97se.dietmonitor.v1.entity.User;
 
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -34,23 +34,34 @@ public class UserController {
     @GetMapping({"/", ""})
     public List<User> all() {
         List<User> users = userService.all();
-        if (!users.isEmpty()) {
-            return users;
+        for (User user : users) {
+            user.setSalt(null);
+            user.setHashedPassword(null);
         }
-        return new ArrayList<>();
+        return users;
     }
 
+    /**
+     * Create a new user
+     * @param registerRequest RegisterRequest object containing user data
+     * @return User object if created successfully, null otherwise
+     */
     @PostMapping({"/register", "/register/"})
-    public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
-        return ResponseEntity.ok(userService.save(user));
+    public ResponseEntity<?> createUser(@RequestBody RegisterRequest registerRequest) {
+        System.out.println(registerRequest);
+        User user = userService.save(registerRequest);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        }
+        return ResponseEntity.badRequest().body("Invalid user data");
     }
 
     @PostMapping
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        User user = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
         if (loginRequest.getPassword().isEmpty() || loginRequest.getEmail().isEmpty()) {
             return ResponseEntity.badRequest().body("Email and password are required");
         }
+        User user = userService.login(loginRequest);
         if (user != null) {
             return ResponseEntity.ok(user);
         }

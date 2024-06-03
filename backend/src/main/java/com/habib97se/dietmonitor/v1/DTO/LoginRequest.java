@@ -1,4 +1,4 @@
-package com.habib97se.dietmonitor.DTO;
+package com.habib97se.dietmonitor.v1.DTO;
 
 public class LoginRequest {
     private String email;

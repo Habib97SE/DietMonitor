@@ -1,7 +1,10 @@
 package com.habib97se.dietmonitor.v1.service;
+import com.habib97se.dietmonitor.v1.DTO.LoginRequest;
+import com.habib97se.dietmonitor.v1.DTO.RegisterRequest;
 import com.habib97se.dietmonitor.v1.entity.User;
 import com.habib97se.dietmonitor.v1.repository.UserRepository;
 import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import com.habib97se.dietmonitor.utils.Encryption;
 import com.habib97se.dietmonitor.utils.Validation;
@@ -17,29 +20,30 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User save(User user) {
-        // validate user data
+    /**
+     * Save a new user to the database
+     * @param registerRequest RegisterRequest object containing user data
+     * @return User object if saved successfully, null otherwise
+     */
+    public User save(RegisterRequest registerRequest) {
 
-        if (!Validation.isEmailValid(user.getEmail())) {
-            return null;
-        }
-        if (!Validation.isNameValid(user.getFirstName()) ||
-            !Validation.isNameValid(user.getLastName())) {
-            return null;
-        }
-        if (!Validation.isPhoneNumberValid(user.getPhoneNumber())) {
-            return null;
-        }
-        if (!Validation.isPasswordValid(user.getHashedPassword())) {
-            return null;
-        }
+        User user = new User();
+        user.setFirstName(registerRequest.getFirstName());
+        user.setLastName(registerRequest.getLastName());
+        user.setEmail(registerRequest.getEmail());
+        user.setPhoneNumber(registerRequest.getPhoneNumber());
+        user.setGender(registerRequest.getGender());
+        user.setCountry(registerRequest.getCountry());
+        user.setCity(registerRequest.getCity());
+        user.setDateOfBirth(registerRequest.getDateOfBirth());
+        user.setSalt(Encryption.generateSalt(user.getEmail()));
+        user.setHashedPassword(Encryption.hashPassword(registerRequest.getPassword(), user.getSalt()));
         try {
-            user.setSalt(Encryption.generateSalt(user.getEmail()));
-            user.setHashedPassword(Encryption.hashPassword(user.getHashedPassword(), user.getSalt()));
-        } catch (Exception e) {
+            return userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            System.out.println("User already exists");
             return null;
         }
-        return userRepository.save(user);
     }
 
     public List<User> all() {
@@ -49,16 +53,17 @@ public class UserService {
             user.setHashedPassword(null);
 
         }
+        System.out.println("Users: " + users);
         return users;
     }
 
-    public User login(String email, String password) {
-        User user = userRepository.findByEmail(email);
+    public User login(LoginRequest loginRequest) {
+        User user = userRepository.findByEmail(loginRequest.getEmail());
         if (user == null) {
             return null;
         }
         // check if password is correct, else return null
-        String hashedPassword = Encryption.hashPassword(password, user.getSalt());
+        String hashedPassword = Encryption.hashPassword(loginRequest.getPassword(), user.getSalt());
         if (hashedPassword.equals(user.getHashedPassword())) {
             return user;
         }
