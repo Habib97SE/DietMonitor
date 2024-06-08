@@ -16,7 +16,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())  // Disable CSRF protection for development
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/users/**").permitAll()  // Allow unauthenticated access to /api/v1/users
+                        .requestMatchers("/api/v1/**").permitAll()  // Allow unauthenticated access to /api/v1/users
                         .anyRequest().authenticated()  // All other requests require authentication
                 )
                 .httpBasic(Customizer.withDefaults());  // Enable HTTP Basic Authentication using defaults

@@ -1,4 +1,4 @@
-package com.habib97se.dietmonitor.v1.DTO;
+package com.habib97se.dietmonitor.v1.DTO.User;
 
 public class LoginRequest {
     private String email;
@@ -8,8 +8,8 @@ public class LoginRequest {
     }
 
     public LoginRequest(String email, String password) {
-        this.email = email;
-        this.password = password;
+        this.email = email.trim().toLowerCase();
+        this.password = password.trim();
     }
 
     public String getEmail() {
@@ -17,7 +17,7 @@ public class LoginRequest {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email.toLowerCase().trim();
     }
 
     public String getPassword() {
@@ -25,6 +25,6 @@ public class LoginRequest {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = password.trim();
     }
 }

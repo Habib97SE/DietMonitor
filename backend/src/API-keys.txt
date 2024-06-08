@@ -1,0 +1,5 @@
+Client ID: 4b4715deebcf4b27a76cfd8884c5049d
+Client Secret: e9a696378890430b83632bb1e2903f56
+
+Consumer key: 4b4715deebcf4b27a76cfd8884c5049d
+Consumer secret: e2bbffb24e1446ef9ad0c25cae08a918

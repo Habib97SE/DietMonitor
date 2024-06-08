@@ -11,12 +11,19 @@ public class Encryption {
     private static final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     public static String generateSalt(String email) {
+        System.out.println("Salt in Encryption:");
         String salt = Instant.now().toString() + email;
+        System.out.println("Salt: " + salt);
+
         return hashSHA256(salt);
     }
 
-    public static String hashPassword(String rawPassword, String salt) {
-        return bCryptPasswordEncoder.encode(rawPassword + salt);
+    public static String hashPassword(String rawPassword) {
+        return bCryptPasswordEncoder.encode(rawPassword);
+    }
+
+    public static boolean checkPassword(String rawPassword, String encodedPassword) {
+        return bCryptPasswordEncoder.matches(rawPassword, encodedPassword);
     }
 
     private static String hashSHA256(String value) {

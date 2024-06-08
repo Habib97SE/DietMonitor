@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
 
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -50,12 +51,11 @@ public class User {
     private String hashedPassword;
 
     @Column(nullable = false)
-    @NotBlank(message = "Salt is required")
-    private String salt;
+    private Boolean isActive = true;
 
     @Column(nullable = false)
     @PastOrPresent(message = "Invalid date of birth")
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Column(nullable = false)
     @PastOrPresent(message = "Invalid date")
@@ -67,17 +67,16 @@ public class User {
     public User() {
     }
 
-    public User(String firstName, String lastName, String email, String phoneNumber, String hashedPassword, String salt, Date dateOfBirth, String country, String city, String gender) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
+    public User(String firstName, String lastName, String email, String phoneNumber, String hashedPassword, LocalDate dateOfBirth, String country, String city, String gender) {
+        this.firstName = firstName.toLowerCase().trim();
+        this.lastName = lastName.toLowerCase().trim();
+        this.email = email.toLowerCase().trim();
         this.phoneNumber = phoneNumber;
-        this.hashedPassword = hashedPassword;
-        this.salt = salt;
+        this.hashedPassword = hashedPassword.trim();
         this.dateOfBirth = dateOfBirth;
-        this.country = country;
-        this.city = city;
-        this.gender = gender;
+        this.country = country.toLowerCase().trim();
+        this.city = city.toLowerCase().trim();
+        this.gender = gender.toLowerCase().trim();
     }
 
     @PrePersist
@@ -103,7 +102,7 @@ public class User {
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        this.firstName = firstName.toLowerCase().trim();
     }
 
     public String getLastName() {
@@ -111,7 +110,7 @@ public class User {
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.lastName = lastName.trim().toLowerCase();
     }
 
     public String getEmail() {
@@ -119,7 +118,7 @@ public class User {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email.toLowerCase().trim();
     }
 
     public String getPhoneNumber() {
@@ -135,22 +134,16 @@ public class User {
     }
 
     public void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
+        this.hashedPassword = hashedPassword.trim();
     }
 
-    public String getSalt() {
-        return salt;
-    }
 
-    public void setSalt(String salt) {
-        this.salt = salt;
-    }
 
-    public Date getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -159,7 +152,7 @@ public class User {
     }
 
     public void setCountry(String country) {
-        this.country = country;
+        this.country = country.trim().toLowerCase();
     }
 
     public String getCity() {
@@ -167,7 +160,7 @@ public class User {
     }
 
     public void setCity(String city) {
-        this.city = city;
+        this.city = city.trim().toLowerCase();
     }
 
     public String getGender() {
@@ -175,7 +168,7 @@ public class User {
     }
 
     public void setGender (String gender) {
-        this.gender = gender;
+        this.gender = gender.trim().toLowerCase();
     }
 
     public Date getCreatedAt() {
@@ -190,6 +183,15 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+
     @Override
     public String toString() {
         return "User{" +
@@ -199,7 +201,6 @@ public class User {
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", hashedPassword='" + hashedPassword + '\'' +
-                ", salt='" + salt + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
                 '}';
     }
@@ -217,7 +218,7 @@ public class User {
         if (email != null ? !email.equals(user.email) : user.email != null) return false;
         if (phoneNumber != null ? !phoneNumber.equals(user.phoneNumber) : user.phoneNumber != null) return false;
         if (hashedPassword != null ? !hashedPassword.equals(user.hashedPassword) : user.hashedPassword != null) return false;
-        if (salt != null ? !salt.equals(user.salt) : user.salt != null) return false;
+
         return dateOfBirth != null ? dateOfBirth.equals(user.dateOfBirth) : user.dateOfBirth == null;
     }
 

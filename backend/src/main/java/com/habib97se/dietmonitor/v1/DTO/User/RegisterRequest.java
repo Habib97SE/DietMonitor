@@ -1,6 +1,6 @@
-package com.habib97se.dietmonitor.v1.DTO;
+package com.habib97se.dietmonitor.v1.DTO.User;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class RegisterRequest {
     private String firstName;
@@ -8,7 +8,7 @@ public class RegisterRequest {
     private String email;
     private String phoneNumber;
     private String password;
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     private String country;
     private String city;
     private String gender;
@@ -16,7 +16,7 @@ public class RegisterRequest {
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String firstName, String lastName, String email, String phoneNumber, String password, Date dateOfBirth, String country, String city, String gender) {
+    public RegisterRequest(String firstName, String lastName, String email, String phoneNumber, String password, LocalDate dateOfBirth, String country, String city, String gender) {
         this.firstName = firstName.toLowerCase().trim();
         this.lastName = lastName.toLowerCase().trim();
         this.email = email.toLowerCase().trim();
@@ -68,11 +68,11 @@ public class RegisterRequest {
         this.password = password.trim();
     }
 
-    public Date getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
