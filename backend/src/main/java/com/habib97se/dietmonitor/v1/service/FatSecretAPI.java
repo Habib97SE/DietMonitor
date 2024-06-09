@@ -2,6 +2,7 @@ package com.habib97se.dietmonitor.v1.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.habib97se.dietmonitor.v1.config.EnvironmentVariables;
 import com.habib97se.dietmonitor.v1.entity.Food;
 import com.habib97se.dietmonitor.v1.entity.FoodImage;
 import com.habib97se.dietmonitor.v1.entity.Serving;
@@ -26,11 +27,8 @@ public class FatSecretAPI {
     private RestTemplate restTemplate;
 
 
-    @Value("${fatsecret.client.id}")
-    private String CLIENT_ID;
-
-    @Value("${fatsecret.client.secret}")
-    private String CLIENT_SECRET;
+    @Autowired
+    private EnvironmentVariables environmentVariables;
 
     private final String TOKEN_URL = "https://oauth.fatsecret.com/connect/token";
     private final String API_BASE_URL = "https://platform.fatsecret.com/rest/server.api";
@@ -40,6 +38,10 @@ public class FatSecretAPI {
 
 
     public String getAccessToken() {
+        String CLIENT_ID = environmentVariables.getFatsecretClientId();
+        String CLIENT_SECRET = environmentVariables.getFatsecretClientSecret();
+        System.out.println("CLIENT_ID: " + CLIENT_ID);
+        System.out.println("CLIENT_SECRET: " + CLIENT_SECRET);
         if (accessToken == null || accessToken.isEmpty()) {
             String credentials = CLIENT_ID + ":" + CLIENT_SECRET;
             String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
