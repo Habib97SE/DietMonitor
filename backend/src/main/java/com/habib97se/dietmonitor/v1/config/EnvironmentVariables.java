@@ -22,7 +22,20 @@ public class EnvironmentVariables {
         return dotenv.get("FATSECRET_CLIENT_SECRET");
     }
 
-    public String getAnotherSecretKey() {
-        return dotenv.get("ANOTHER_SECRET_KEY");
+    public String getAPIBaseURL() {
+        return dotenv.get("API_BASE_URL");
     }
+
+    public String getMySQLURL() {
+        return dotenv.get("MYSQL_URL");
+    }
+
+    public String getMySQLUsername() {
+        return dotenv.get("MYSQL_USERNAME");
+    }
+
+    public String getMySQLPassword() {
+        return dotenv.get("MYSQL_PASSWORD");
+    }
+
 }

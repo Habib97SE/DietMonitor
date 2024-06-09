@@ -15,7 +15,9 @@ import com.habib97se.dietmonitor.v1.service.FatSecretAPI;
 import java.util.List;
 
 @Service
-public class FoodService {
+public class
+
+FoodService {
 
     @Autowired
     private FoodRepository foodRepository;
@@ -46,25 +48,39 @@ public class FoodService {
 
 
     public Food getFoodById(Long id) {
-        System.out.println("FoodService.getFoodById");
-        Food food = foodRepository.findByFoodId(id);
-
-        if (food == null) {
-            System.out.println("Getting food details from FatSecret API");
-            food = fatSecretAPI.getFoodDetails(id);
-            foodRepository.save(food);
-        }
-        return food;
+        return foodRepository.findById(id).orElse(null);
     }
 
 
     public Food getFoodByFoodId(Long foodId) {
-        return foodRepository.findByFoodId(foodId);
+        Food food = foodRepository.findByFoodId(foodId);
+        if (food == null) {
+            food = fatSecretAPI.getFoodDetails(foodId);
+            foodRepository.save(food);
+        }
+        return food;
     }
 
     public Food getFoodByBarcode(String barcode) {
         System.out.println("FoodService.getFoodByBarcode");
         Food food =  fatSecretAPI.getFoodByBarcode(barcode);
         return food;
+    }
+
+    public List<Food> searchFoods(String query, int page, int maxResults) {
+        return fatSecretAPI.searchFoods(query, page, maxResults);
+    }
+
+    public List<String> getAutoCompleteSuggestions(String query, int maxResults) {
+        return fatSecretAPI.getAutoCompleteSuggestions(query, maxResults);
+    }
+
+    public ResponseEntity<Object> deleteFood(Long id) {
+        try {
+            foodRepository.deleteById(id);
+            return ResponseHandler.generateResponse("Food deleted successfully", HttpStatus.OK, null);
+        } catch (Exception e) {
+            return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.BAD_REQUEST, null);
+        }
     }
 }

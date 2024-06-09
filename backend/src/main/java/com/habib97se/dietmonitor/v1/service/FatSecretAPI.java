@@ -38,10 +38,9 @@ public class FatSecretAPI {
 
 
     public String getAccessToken() {
-        String CLIENT_ID = environmentVariables.getFatsecretClientId();
-        String CLIENT_SECRET = environmentVariables.getFatsecretClientSecret();
-        System.out.println("CLIENT_ID: " + CLIENT_ID);
-        System.out.println("CLIENT_SECRET: " + CLIENT_SECRET);
+        final String CLIENT_ID = environmentVariables.getFatsecretClientId();
+        final String CLIENT_SECRET = environmentVariables.getFatsecretClientSecret();
+
         if (accessToken == null || accessToken.isEmpty()) {
             String credentials = CLIENT_ID + ":" + CLIENT_SECRET;
             String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
@@ -53,7 +52,7 @@ public class FatSecretAPI {
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
             // Create the request body with the required parameters
-            String body = "grant_type=client_credentials&scope=basic";
+            String body = "grant_type=client_credentials&scope=basic barcode premier";
 
             HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
@@ -63,13 +62,16 @@ public class FatSecretAPI {
                     ObjectMapper objectMapper = new ObjectMapper();
                     JsonNode jsonNode = objectMapper.readTree(response.getBody());
                     accessToken = jsonNode.path("access_token").asText();
+                } else {
+                    throw new RuntimeException("Failed to get access token: " + response.getStatusCode());
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException("Failed to get access token", e);
             }
         }
         return accessToken;
     }
+
 
     public Food getFoodDetails(Long foodId) {
         getAccessToken(); // Ensure accessToken is obtained and valid
@@ -129,13 +131,7 @@ public class FatSecretAPI {
         if (servingsNode.isArray()) {
             for (JsonNode servingNode : servingsNode) {
                 String metricServingUnit = servingNode.path("metric_serving_unit").asText();
-                System.out.println("Metric Serving Unit: " + metricServingUnit);
 
-                // if metric_serving_unit is not equal to g, continue
-                if (!metricServingUnit.equals("g")) {
-                    System.out.println("Skipping serving with unit: " + metricServingUnit);
-                    continue;
-                }
                 Serving serving = new Serving();
                 serving.setServingId(servingNode.path("serving_id").asLong());
                 serving.setServingDescription(servingNode.path("serving_description").asText());
@@ -169,13 +165,55 @@ public class FatSecretAPI {
         return food;
     }
 
-    public Food getFoodByBarcode(String barcode) {
-        getAccessToken(); // Ensure accessToken is obtained and valid
+    public Long getFoodIdByBarcode(String barcode) {
+        String token = getAccessToken(); // Ensure accessToken is obtained and valid
 
         URI uri = UriComponentsBuilder.fromHttpUrl(API_BASE_URL)
                 .queryParam("method", "food.find_id_for_barcode")
                 .queryParam("barcode", barcode)
                 .queryParam("format", "json")
+                .build().toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonNode = objectMapper.readTree(response.getBody());
+                System.out.println("Barcode response: ");
+                System.out.println(jsonNode.toString());
+                return jsonNode.path("food_id").path("value").asLong();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public Food getFoodByBarcode(String barcode) {
+        Long foodId = getFoodIdByBarcode(barcode);
+        if (foodId != null) {
+            return getFoodDetails(foodId);
+        }
+        return null;
+    }
+
+    public List<Food> searchFoods(String query, int page, int maxResults) {
+        accessToken = getAccessToken(); // Ensure accessToken is obtained and valid
+
+        URI uri = UriComponentsBuilder.fromHttpUrl(API_BASE_URL)
+                .queryParam("method", "foods.search.v3")
+                .queryParam("search_expression", query)
+                .queryParam("page_number", page)
+                .queryParam("max_results", maxResults)
+                .queryParam("format", "json")
+                .queryParam("region", "SE")
+                .queryParam("language", "sv")
                 .build().toUri();
 
         HttpHeaders headers = new HttpHeaders();
@@ -188,8 +226,49 @@ public class FatSecretAPI {
             if (response.getStatusCode() == HttpStatus.OK) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode jsonNode = objectMapper.readTree(response.getBody());
-                Long foodId = jsonNode.path("food_id").asLong();
-                return getFoodDetails(foodId);
+                System.out.println(jsonNode.toString());
+                List<Food> foods = new ArrayList<>();
+                JsonNode foodsNode = jsonNode.path("foods_search").path("results").path("food");
+                if (foodsNode.isArray()) {
+                    for (JsonNode foodNode : foodsNode) {
+                        foods.add(mapJsonToFood(foodNode));
+                    }
+                }
+                return foods;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<String> getAutoCompleteSuggestions (String expression, int maxResults) {
+        accessToken = getAccessToken(); // Ensure accessToken is obtained and valid
+        URI uri = UriComponentsBuilder.fromHttpUrl(API_BASE_URL)
+                .queryParam("method", "foods.autocomplete.v2")
+                .queryParam("max_results", maxResults)
+                .queryParam("format", "json")
+                .queryParam("expression", expression)
+                .build().toUri();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+            System.out.println(response.toString());
+            if (response.getStatusCode() == HttpStatus.OK) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonNode = objectMapper.readTree(response.getBody());
+                System.out.println(jsonNode.toString());
+                List<String> autoCompletes = new ArrayList<>();
+                JsonNode autoCompletesNode = jsonNode.path("suggestions").path("suggestion");
+                if (autoCompletesNode.isArray()) {
+                    for (JsonNode autoCompleteNode : autoCompletesNode) {
+                        autoCompletes.add(autoCompleteNode.asText());
+                    }
+                }
+                return autoCompletes;
             }
         } catch (Exception e) {
             e.printStackTrace();
