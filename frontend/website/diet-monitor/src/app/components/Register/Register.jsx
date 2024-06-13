@@ -1,8 +1,10 @@
 "use client"
-import React from 'react';
+import React, { useState } from 'react';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import User from "../../../models/User";
+
 
 const schema = yup.object().shape({
     firstName: yup.string().required("First name is required"),
@@ -22,13 +24,43 @@ export default function Register() {
         resolver: yupResolver(schema),
     });
 
+    const [error, setError] = useState(false);
+    const[success, setSuccess] = useState(false);
+    const [message, setMessage] = useState("");
+
     const onSubmit = (data) => {
         console.log(data);
+        const user = {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            phoneNumber: data.phoneNumber,
+            password: data.password,
+            city: data.city,
+            country: data.country,
+            gender: data.gender,
+            dateOfBirth: data.dateOfBirth,
+        };
+        console.log(user);
+        const userModel = new User();
+        userModel.register(user).then(response => {
+            if (response) {
+                setSuccess(true);
+                setError(false);
+                setMessage("User registered successfully");
+                document.getElementById("register-form").reset();
+            } else {
+                setSuccess(false);
+                setError(true);
+                setMessage("User registration failed");
+            }
+        });
+
     }
 
     return (
         <div>
-            <form className="w-full max-w-lg" onSubmit={handleSubmit(onSubmit)}>
+            <form className="w-full max-w-lg" id={"register-form"} onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex flex-wrap -mx-3 mb-6">
                     <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                         <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -471,6 +503,8 @@ export default function Register() {
                 <hr/>
                 <div className="my-2"/>
             </form>
+            {error && <div className={"bg-red-200 border-t-4 border-red-600 rounded-b text-red-950 px-4 py-3 font-bold text-center"}>{message}</div>}
+            {success && <div className={"bg-green-200 border-t-4 border-green-600 rounded-b text-green-950 px-4 py-3 font-bold text-center"}>{message}</div>}
         </div>
     );
 }
