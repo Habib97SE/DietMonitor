@@ -7,63 +7,63 @@ export default function Footer() {
         <div className="flex justify-evenly items-center bg-gray-500 p-6">
             {/* add 2 col with menus and one newsletter*/}
             <div className="flex flex-col  items-center flex-shrink-0 text-white mr-6">
-                <span className="font-semibold text-xl tracking-tight hover:text-black ">Diet Monitor</span>
+                <span className="font-semibold text-xl tracking-tight">Diet Monitor</span>
                 <nav className="flex items-center justify-between flex-wrap bg-gray-500 p-6">
                     <ul>
                         <li>
                             <Link href="/">
                                 <span
-                                    className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-800 mr-4">Home</span>
+                                    className="block mt-4 lg:inline-block lg:mt-0 text-white  mr-4">Home</span>
                             </Link>
                         </li>
                         <li>
                             <Link href="/features">
                                 <span
-                                    className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">Features</span>
+                                    className="block mt-4 lg:inline-block lg:mt-0 text-white  mr-4">Features</span>
                             </Link>
                         </li>
                         <li>
                             <Link href="/about">
                                 <span
-                                    className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">About</span>
+                                    className="block mt-4 lg:inline-block lg:mt-0 text-white  mr-4">About</span>
                             </Link>
                         </li>
                         <li>
                             <Link href="/contact">
                                 <span
-                                    className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">Contact</span>
+                                    className="block mt-4 lg:inline-block lg:mt-0 text-white  mr-4">Contact</span>
                             </Link>
                         </li>
                     </ul>
                 </nav>
             </div>
             <div className={"flex flex-col items-center flex-shrink-0 text-white mr-6"}>
-                <span className="font-semibold text-xl tracking-tight hover:text-black ">Customer Support</span>
+                <span className="font-semibold text-xl tracking-tight">Customer Support</span>
                 <div className={"flex justify-center space-x-4"}>
                     <nav>
                         <ul>
                             <li>
                                 <Link href="/faq">
                                     <span
-                                        className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-800 mr-4">FAQ</span>
+                                        className="block mt-4 lg:inline-block lg:mt-0 text-white mr-4">FAQ</span>
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/contact">
                                     <span
-                                        className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">Contact</span>
+                                        className="block mt-4 lg:inline-block lg:mt-0 text-white mr-4">Contact</span>
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/terms">
                                     <span
-                                        className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">Terms</span>
+                                        className="block mt-4 lg:inline-block lg:mt-0 text-white  mr-4">Terms</span>
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/privacy">
                                     <span
-                                        className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">Privacy</span>
+                                        className="block mt-4 lg:inline-block lg:mt-0 text-white  mr-4">Privacy</span>
                                 </Link>
                             </li>
                         </ul>
@@ -71,7 +71,7 @@ export default function Footer() {
                 </div>
             </div>
             <div className="flex flex-col  items-center flex-shrink-0 text-white mr-6">
-                <span className="font-semibold text-xl tracking-tight hover:text-black ">Newsletter</span>
+                <span className="font-semibold text-xl tracking-tight">Newsletter</span>
                 <form action="#">
                     <div className="items-center mx-auto mb-3 space-y-4 max-w-screen-sm sm:flex sm:space-y-0">
                         <div className="relative w-full">

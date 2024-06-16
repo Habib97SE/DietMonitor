@@ -1,9 +1,10 @@
 "use client"
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import User from "../../../models/User";
+import {AiOutlineEye, AiOutlineEyeInvisible} from "react-icons/ai";
 
 
 const schema = yup.object().shape({
@@ -19,17 +20,31 @@ const schema = yup.object().shape({
     terms: yup.boolean().oneOf([true], "You must agree to the terms and conditions"),
 });
 
-export default function Register() {
+export default function RegisterForm() {
     const {register, handleSubmit, formState: {errors}} = useForm({
         resolver: yupResolver(schema),
     });
 
+    const [passwordValid, setPasswordValid] = useState(false);
+
     const [error, setError] = useState(false);
-    const[success, setSuccess] = useState(false);
+    const [success, setSuccess] = useState(false);
     const [message, setMessage] = useState("");
 
-    const onSubmit = (data) => {
+    const [passwordVisible, setPasswordVisible] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setPasswordVisible(!passwordVisible);
+    }
+
+    const onSubmit = async (data) => {
+        if (!passwordValid) {
+            setError(true);
+            setMessage("Password does not meet the requirements");
+            return;
+        }
         console.log(data);
+        const birthDate = new Date(data.dateOfBirth).toISOString().split('T')[0];
         const user = {
             firstName: data.firstName,
             lastName: data.lastName,
@@ -39,23 +54,64 @@ export default function Register() {
             city: data.city,
             country: data.country,
             gender: data.gender,
-            dateOfBirth: data.dateOfBirth,
+            dateOfBirth: birthDate,
         };
         console.log(user);
         const userModel = new User();
-        userModel.register(user).then(response => {
-            if (response) {
-                setSuccess(true);
-                setError(false);
-                setMessage("User registered successfully");
-                document.getElementById("register-form").reset();
-            } else {
-                setSuccess(false);
-                setError(true);
-                setMessage("User registration failed");
-            }
-        });
+        const response = await userModel.register(user);
+        console.log(response);
+        if (response.status === 201) {
+            setSuccess(true);
+            setError(false);
+            setMessage("Registration successful");
+        } else {
+            setError(true);
+            setSuccess(false);
+            setMessage(response.message);
+        }
+    };
 
+
+    const checkPasswordRequirements = (e) => {
+        const classNamesValid = "text-green-500 text-xs italic my-2";
+        const classNamesInvalid = "text-gray-600 text-xs italic my-2";
+        const password = e.target.value;
+        const eightChar = document.getElementById("eight-char");
+        const oneUpper = document.getElementById("one-upper");
+        const oneLower = document.getElementById("one-lower");
+        const oneNumber = document.getElementById("one-number");
+        const oneSpecial = document.getElementById("one-special");
+        if (password.length >= 8) {
+            eightChar.className = classNamesValid;
+        } else {
+            eightChar.className = classNamesInvalid;
+        }
+        if (password.match(/[A-Z]/)) {
+            oneUpper.className = classNamesValid;
+        } else {
+            oneUpper.className = classNamesInvalid;
+        }
+        if (password.match(/[a-z]/)) {
+            oneLower.className = classNamesValid;
+        } else {
+            oneLower.className = classNamesInvalid;
+        }
+        if (password.match(/[0-9]/)) {
+            oneNumber.className = classNamesValid;
+        } else {
+            oneNumber.className = classNamesInvalid;
+        }
+        if (password.match(/[!@#\$%\^&\*]/)) {
+            oneSpecial.className = classNamesValid;
+        } else {
+            oneSpecial.className = classNamesInvalid;
+        }
+        // check if all requirements are met
+        if (password.length >= 8 && password.match(/[A-Z]/) && password.match(/[a-z]/) && password.match(/[0-9]/) && password.match(/[!@#\$%\^&\*]/)) {
+            setPasswordValid(true);
+        } else {
+            setPasswordValid(false);
+        }
     }
 
     return (
@@ -126,19 +182,41 @@ export default function Register() {
                 </div>
                 <div className="flex flex-wrap -mx-3 mb-6">
                     <div className="w-full px-3">
-                        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                               htmlFor="password">
+                        <label
+                            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                            htmlFor="password"
+                        >
                             Password
                         </label>
-                        <input
-                            className={`appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 ${errors.password ? 'border-red-500' : ''}`}
-                            id="password"
-                            type="password"
-                            placeholder="********"
-                            {...register("password")}
-                        />
-                        <p className="text-gray-600 text-xs italic">At least 8 characters, and it should contain 1
-                            uppercase, 1 lowercase, 1 number and 1 special character.</p>
+                        <div className="relative">
+                            <input
+                                className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                                id="password"
+                                type={passwordVisible ? "text" : "password"}
+                                placeholder="******************"
+                                name="password"
+                                {...register("password")}
+                                onChange={checkPasswordRequirements}
+                            />
+                            <button
+                                type="button"
+                                onClick={togglePasswordVisibility}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600"
+                            >
+                                {passwordVisible ? (
+                                    <AiOutlineEye size={24}/>
+                                ) : (
+                                    <AiOutlineEyeInvisible size={24}/>
+                                )}
+                            </button>
+                        </div>
+                        <ul id={"password-requirements"} className={"text-xs italic text-gray-600 list-none"}>
+                            <li id={"eight-char"} className={"my-2"}>At least 8 characters</li>
+                            <li id={"one-upper"} className={"my-2"}>At least 1 uppercase character</li>
+                            <li id={"one-lower"} className={"my-2"}>At least 1 lowercase character</li>
+                            <li id={"one-number"} className={"my-2"}>At least 1 number</li>
+                            <li id={"one-special"} className={"my-2"}>At least 1 special character</li>
+                        </ul>
                         {errors.password && <p className="text-red-500 text-xs italic">{errors.password.message}</p>}
                     </div>
                 </div>
@@ -389,7 +467,7 @@ export default function Register() {
                                 <option value="Suriname">Suriname</option>
                                 <option value="Svalbard and Jan Mayen">Svalbard and Jan Mayen</option>
                                 <option value="Swaziland">Swaziland</option>
-                                <option value="Sweden">Sweden</option>
+                                <option value="Sweden" selected={true}>Sweden</option>
                                 <option value="Switzerland">Switzerland</option>
                                 <option value="Syrian Arab Republic">Syrian Arab Republic</option>
                                 <option value="Taiwan">Taiwan</option>
@@ -503,8 +581,10 @@ export default function Register() {
                 <hr/>
                 <div className="my-2"/>
             </form>
-            {error && <div className={"bg-red-200 border-t-4 border-red-600 rounded-b text-red-950 px-4 py-3 font-bold text-center"}>{message}</div>}
-            {success && <div className={"bg-green-200 border-t-4 border-green-600 rounded-b text-green-950 px-4 py-3 font-bold text-center"}>{message}</div>}
+            {error && <div
+                className={"bg-red-200 border-t-4 border-red-600 rounded-b text-red-950 px-4 py-3 font-bold text-center"}>{message}</div>}
+            {success && <div
+                className={"bg-green-200 border-t-4 border-green-600 rounded-b text-green-950 px-4 py-3 font-bold text-center"}>{message}</div>}
         </div>
     );
 }

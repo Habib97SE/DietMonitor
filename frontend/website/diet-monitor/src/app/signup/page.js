@@ -1,4 +1,4 @@
-import Register from "@/app/components/Register/Register";
+import RegisterForm from "@/app/components/Forms/RegisterForm";
 import Image from "next/image";
 import {FaMeta} from "react-icons/fa6";
 import {FaGoogle} from "react-icons/fa";
@@ -28,7 +28,7 @@ export default function Signup() {
                 <p className={"text-2xl my-3"}>
                     Welcome to the signup page.
                 </p>
-                <Register/>
+                <RegisterForm/>
                 {/* Add 3 buttons for signing up via Meta, Google and Apple */}
                 <p className={"text-center text-2xl my-3"}>
                     Or sign up with
