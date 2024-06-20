@@ -1,17 +1,23 @@
 package com.habib97se.dietmonitor.v1.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.habib97se.dietmonitor.utils.LocalDateDeserializer;
+import com.habib97se.dietmonitor.utils.LocalDateSerializer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
 
-
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
+
 
 @Entity
-@Table(name ="users")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,15 +59,22 @@ public class User {
     @Column(nullable = false)
     private Boolean isActive = true;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Meal> meals;
+
     @Column(nullable = false)
     @PastOrPresent(message = "Invalid date of birth")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
+
 
     @Column(nullable = false)
     @PastOrPresent(message = "Invalid date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createdAt;
 
     @Column(nullable = true)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updatedAt;
 
     public User() {
@@ -88,6 +101,10 @@ public class User {
     protected void onUpdate() {
         this.updatedAt = new Date();
     }
+
+    // Getters and setters omitted for brevity
+
+
 
     public Long getId() {
         return id;

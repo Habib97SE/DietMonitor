@@ -1,12 +1,15 @@
 package com.habib97se.dietmonitor.v1.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import com.habib97se.dietmonitor.v1.entity.Serving;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -41,6 +44,15 @@ public class Food {
     @JsonManagedReference
     private List<Serving> servings;
 
+    @Column(nullable = false)
+    @PastOrPresent(message = "Invalid date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createdAt;
+
+    @Column(nullable = true)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updatedAt;
+
     public Food() {
     }
 
@@ -51,6 +63,16 @@ public class Food {
         this.foodUrl = foodUrl;
         this.foodImages = foodImages;
         this.servings = servings;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
     }
 
     public Long getId() {

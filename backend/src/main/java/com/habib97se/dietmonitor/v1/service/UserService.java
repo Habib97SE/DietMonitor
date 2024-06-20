@@ -35,7 +35,7 @@ public class UserService {
         Map<Boolean, String> validationResult = Validation.registrationFieldsValid(registerRequest);
 
         if (validationResult.containsKey(false)) {
-            return ResponseHandler.generateResponse(validationResult.get(false), HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(validationResult.get(false), HttpStatus.OK, null, "true");
         }
 
 
@@ -53,13 +53,13 @@ public class UserService {
 
         User existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser != null) {
-            return ResponseHandler.generateResponse("Email already exists", HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse("Email already exists", HttpStatus.OK, null, "true");
         }
         try {
             userRepository.save(user);
-            return ResponseHandler.generateResponse("User created successfully", HttpStatus.CREATED, user);
+            return ResponseHandler.generateResponse("User created successfully", HttpStatus.CREATED, user, "false");
         } catch (DataIntegrityViolationException e) {
-            return ResponseHandler.generateResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR, null);
+            return ResponseHandler.generateResponse("Something went wrong", HttpStatus.OK, null, "true");
         }
     }
 
@@ -69,7 +69,7 @@ public class UserService {
      */
     public ResponseEntity<Object> all() {
         List<User> users = userRepository.findAll();
-        return ResponseHandler.generateResponse("All users", HttpStatus.OK, users);
+        return ResponseHandler.generateResponse("All users", HttpStatus.OK, users, "false");
     }
 
     /**
@@ -82,20 +82,20 @@ public class UserService {
 
         if (validationResult.containsKey(false)) {
             System.out.println(validationResult.get(false));
-            return ResponseHandler.generateResponse( "Invalid email or password" , HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse( "Invalid email or password" , HttpStatus.OK, null, "true");
         }
 
         User user = userRepository.findByEmail(loginRequest.getEmail());
         if (user == null) {
-            return ResponseHandler.generateResponse("Invalid email or password", HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse("Invalid email or password", HttpStatus.OK, null, "true");
         }
 
         boolean isPasswordValid = Encryption.checkPassword(loginRequest.getPassword(), user.getHashedPassword());
         if (!isPasswordValid) {
-            return ResponseHandler.generateResponse("Invalid email or password", HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse("Invalid email or password", HttpStatus.OK, null, "true");
         }
 
-        return ResponseHandler.generateResponse("Login successful", HttpStatus.OK, user);
+        return ResponseHandler.generateResponse("Login successful", HttpStatus.OK, user, "false");
     }
 
     public User getUserById(Long userId) {
@@ -112,20 +112,20 @@ public class UserService {
         User user = userRepository.findById(userId).orElse(null);
         // Check if user exists, return bad request if not
         if (user == null) {
-            return ResponseHandler.generateResponse("User not found", HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse("User not found", HttpStatus.OK, null, "true");
         }
 
         Map<Boolean, String> validationResult = Validation.isUpdateRequestValid(updateRequest);
 
         // Check if any field is invalid, return bad request if so
         if (validationResult.containsKey(false)) {
-            return ResponseHandler.generateResponse(validationResult.get(false), HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(validationResult.get(false), HttpStatus.OK, null, "true");
         }
 
         // check if email is already existed.
         User existingUser = userRepository.findByEmail(updateRequest.getEmail());
         if (!Objects.equals(existingUser.getId(), user.getId())) {
-            return ResponseHandler.generateResponse("Email already exists", HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse("Email already exists", HttpStatus.OK, null, "true");
         }
 
         // add try catch block to handle exceptions and return internal server error
@@ -146,9 +146,9 @@ public class UserService {
 
 
             userRepository.save(user);
-            return ResponseHandler.generateResponse("User updated successfully", HttpStatus.OK, user);
+            return ResponseHandler.generateResponse("User updated successfully", HttpStatus.OK, user, "false");
         } catch (DataIntegrityViolationException e) {
-            return ResponseHandler.generateResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR, null);
+            return ResponseHandler.generateResponse("Something went wrong", HttpStatus.OK, null, "true");
         }
 
     }
@@ -162,9 +162,9 @@ public class UserService {
         User user = userRepository.findById(id).orElse(null);
         assert user != null;
         if (!user.getIsActive()) {
-            return ResponseHandler.generateResponse("User not found", HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse("User not found", HttpStatus.OK, null, "true");
         }
-        return ResponseHandler.generateResponse("User found", HttpStatus.OK, user);
+        return ResponseHandler.generateResponse("User found", HttpStatus.OK, user, "false");
     }
 
     /**
@@ -175,19 +175,19 @@ public class UserService {
     public ResponseEntity<Object> deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
-            return ResponseHandler.generateResponse("User not found", HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse("User not found", HttpStatus.OK, null, "true");
         }
 
         if (!user.getIsActive()) {
-            return ResponseHandler.generateResponse("User not found", HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse("User not found", HttpStatus.OK, null, "true");
         }
 
         try {
             user.setIsActive(false);
             userRepository.save(user);
-            return ResponseHandler.generateResponse("User deleted successfully", HttpStatus.OK, user);
+            return ResponseHandler.generateResponse("User deleted successfully", HttpStatus.OK, user, "false");
         } catch (Exception e) {
-            return ResponseHandler.generateResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR, null);
+            return ResponseHandler.generateResponse("Something went wrong", HttpStatus.OK, null, "true");
         }
     }
 

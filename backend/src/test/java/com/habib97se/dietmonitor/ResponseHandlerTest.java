@@ -14,20 +14,13 @@ public class ResponseHandlerTest {
         String message = "Test message";
         Object responseObj = new Object();
         HttpStatus status = HttpStatus.OK;
-
-        ResponseEntity<Object> response = ResponseHandler.generateResponse(message, status, responseObj);
-
+        ResponseEntity<Object> response = ResponseHandler.generateResponse(message, status, responseObj, "false");
         System.out.println(response.toString());
-
         assert response.getStatusCode().equals(status);
-
         message = "Email already exists";
         status = HttpStatus.BAD_REQUEST;
-        response = ResponseHandler.generateResponse(message, status, responseObj);
-
+        response = ResponseHandler.generateResponse(message, status, responseObj, "true");
         System.out.println(response.getStatusCode());
-
         assert response.getStatusCode().equals(status);
-
     }
 }

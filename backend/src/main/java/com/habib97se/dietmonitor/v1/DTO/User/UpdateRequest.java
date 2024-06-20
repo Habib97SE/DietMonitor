@@ -1,6 +1,7 @@
 package com.habib97se.dietmonitor.v1.DTO.User;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 public class UpdateRequest {
     private String firstName;

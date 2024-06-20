@@ -24,8 +24,8 @@ public class UserController {
 
     /**
      * Retrieve a list of all users in the database
-     * @return List of all users
      *
+     * @return List of all users
      */
     @GetMapping({"/", ""})
     public ResponseEntity<Object> all() {
@@ -34,17 +34,20 @@ public class UserController {
 
     /**
      * Create a new user
+     *
      * @param registerRequest RegisterRequest object containing user data
      * @return User object if created successfully, null otherwise
      */
     @PostMapping({"/register", "/register/"})
-    public ResponseEntity<?> createUser(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<Object> createUser(@RequestBody RegisterRequest registerRequest) {
         System.out.println("register user called");
+        System.out.println(registerRequest);
         return userService.save(registerRequest);
     }
 
     /**
      * Login a user
+     *
      * @param loginRequest LoginRequest object containing user email and password
      * @return User object if login successful, null otherwise
      */
@@ -65,7 +68,8 @@ public class UserController {
 
     /**
      * Update a user
-     * @param userId User ID
+     *
+     * @param userId        User ID
      * @param updateRequest UpdateRequest object containing user data
      * @return
      */
@@ -76,6 +80,7 @@ public class UserController {
 
     /**
      * Delete a user, given the user ID
+     *
      * @param userId User ID
      * @return ResponseEntity
      */

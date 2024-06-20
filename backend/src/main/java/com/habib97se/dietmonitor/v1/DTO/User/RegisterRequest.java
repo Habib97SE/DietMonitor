@@ -1,6 +1,9 @@
 package com.habib97se.dietmonitor.v1.DTO.User;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDate;
+import java.util.Date;
 
 public class RegisterRequest {
     private String firstName;
@@ -8,6 +11,8 @@ public class RegisterRequest {
     private String email;
     private String phoneNumber;
     private String password;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
     private String country;
     private String city;

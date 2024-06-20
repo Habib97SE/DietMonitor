@@ -40,9 +40,9 @@ FoodService {
     public ResponseEntity<Object> save (Food food) {
         try {
             foodRepository.save(food);
-            return ResponseHandler.generateResponse("Food saved successfully", HttpStatus.CREATED, food);
+            return ResponseHandler.generateResponse("Food saved successfully", HttpStatus.CREATED, food, "false");
         } catch (Exception e) {
-            return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.OK, null, "true");
         }
     }
 
@@ -63,8 +63,7 @@ FoodService {
 
     public Food getFoodByBarcode(String barcode) {
         System.out.println("FoodService.getFoodByBarcode");
-        Food food =  fatSecretAPI.getFoodByBarcode(barcode);
-        return food;
+        return fatSecretAPI.getFoodByBarcode(barcode);
     }
 
     public List<Food> searchFoods(String query, int page, int maxResults) {
@@ -78,9 +77,9 @@ FoodService {
     public ResponseEntity<Object> deleteFood(Long id) {
         try {
             foodRepository.deleteById(id);
-            return ResponseHandler.generateResponse("Food deleted successfully", HttpStatus.OK, null);
+            return ResponseHandler.generateResponse("Food deleted successfully", HttpStatus.OK, null, "false");
         } catch (Exception e) {
-            return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.OK, null, "true");
         }
     }
 }
