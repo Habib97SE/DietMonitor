@@ -5,6 +5,7 @@ import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import User from "@/models/User";
 import * as yup from "yup";
+import { loginForm } from "@/data/formPlaceholder";
 
 const schema = yup.object().shape({
     email: yup.string().email("Please enter a valid email address").required("Email is required"),
@@ -59,16 +60,16 @@ export default function LoginForm() {
                     <div className="w-full px-3">
                         <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                            htmlFor="email"
+                            htmlFor={loginForm.email.id}
                         >
-                            Email
+                            {loginForm.email.label}
                         </label>
                         <input
                             className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                            id="email"
-                            type="email"
-                            placeholder="jane.doe@example.com"
-                            name="email"
+                            id={loginForm.email.id}
+                            type={loginForm.email.type}
+                            placeholder={loginForm.email.placeholder}
+                            name={loginForm.email.name}
                             {...register("email")}
                         />
                         {errors.email && <p className="text-red-500 text-xs italic">{errors.email.message}</p>}
@@ -111,8 +112,8 @@ export default function LoginForm() {
                     <div className="w-full px-3">
                         <input
                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                            type="submit"
-                            value={"Login"}
+                            type={loginForm.submitButton.type}
+                            value={loginForm.submitButton.text}
                         />
                     </div>
                 </div>

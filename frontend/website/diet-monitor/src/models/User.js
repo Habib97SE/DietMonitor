@@ -41,7 +41,17 @@ export default class User {
 
     async getUser(userId) {
         try {
-            const response = await this.api.get('/profile/' + userId);
+            const response = await this.api.get('/' + userId + '/profile');
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    async updateUser(updatedUser) {
+        try {
+            const response = await this.api.put("/" + updatedUser.id, updatedUser);
             return response.data;
         } catch (error) {
             console.error(error);

@@ -1,19 +1,29 @@
 "use client";
 import Link from 'next/link';
 import {useState} from 'react';
+import {topMenu} from "@/data/menu";
+import DropDown from "@/app/components/NavBar/DropDown";
 
 const NavBar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
     };
 
+    const toggleProfileMenu = () => {
+        setProfileMenuOpen(!profileMenuOpen);
+    }
+
+    const userLoggedIn = true;
+
     return (
 
         <nav className="flex items-center justify-between flex-wrap bg-gray-500 p-6">
             <div className="flex items-center flex-shrink-0 text-white mr-6">
-                <span className="font-semibold text-xl tracking-tight hover:text-black "><Link href={"/"}>Diet Monitor</Link></span>
+                <span className="font-semibold text-xl tracking-tight hover:text-black "><Link
+                    href={"/"}>Diet Monitor</Link></span>
             </div>
             <div className="block lg:hidden">
                 <button
@@ -29,31 +39,14 @@ const NavBar = () => {
             <div
                 className={`${menuOpen ? 'block' : 'hidden'} w-full block flex-grow lg:flex lg:items-center lg:w-auto`}>
                 <div className="text-sm lg:flex-grow">
-                    <Link href="/">
+                    {topMenu.topMenu.map((menu) => (
+                        <Link key={menu.id} href={menu.url}>
                             <span
-                                className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-800 mr-4">Home</span>
-                    </Link>
-                    <Link href="/features">
-                            <span
-                                className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">Features</span>
-                    </Link>
-                    <Link href="/about">
-                            <span
-                                className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">About</span>
-                    </Link>
-                    <Link href="/contact">
-                            <span
-                                className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">Contact</span>
-                    </Link>
+                                className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-800 mr-4">{menu.title}</span>
+                        </Link>
+                    ))}
                 </div>
-                <div>
-                    <a
-                        href="/signup"
-                        className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0"
-                    >
-                        My account
-                    </a>
-                </div>
+                <DropDown />
             </div>
         </nav>
     );
