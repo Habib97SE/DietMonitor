@@ -22,7 +22,10 @@ export default class Meal {
 
     async getMeals(userId, date, mealType) {
         try {
+            const endpoint = '/' + userId + '/' + date + '/' + mealType;
+
             const response = await this.api.get('/' + userId + '/' + date + '/' + mealType);
+
             return response.data;
         } catch (error) {
             console.error(error);

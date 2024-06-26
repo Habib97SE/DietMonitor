@@ -1,10 +1,10 @@
 "use client";
-import {useState} from "react";
+import { useState } from "react";
 import Food from "@/models/Food";
 import Image from "next/image";
 import Meal from "@/models/Meal";
 
-export default function AddNewFood({mealType, mealDate}) {
+export default function AddNewFood({ mealType, mealDate }) {
     const [searchResults, setSearchResults] = useState({});
     const foodModel = new Food();
     const mealModel = new Meal();
@@ -15,8 +15,7 @@ export default function AddNewFood({mealType, mealDate}) {
     const handleAutocomplete = async (search) => {
         if (search.length < 3) return;
         setAutocomplete(await foodModel.autocomplete(search));
-
-    }
+    };
 
     const handleSearch = async (search, pageNumber = 1) => {
         if (pageNumber < 1) return;
@@ -25,35 +24,53 @@ export default function AddNewFood({mealType, mealDate}) {
         const resultsWithAmount = searchResults.data.foods.map((food) => ({
             ...food,
             foodAmount: 1, // Initialize the foodAmount property
+            servingId: food.servings?.[0]?.servingId || null, // Initialize servingId
+            servingSize: 1 // Initialize servingSize
         }));
-        setSearchResults({...searchResults.data, foods: resultsWithAmount});
-
-    }
+        setSearchResults({ ...searchResults.data, foods: resultsWithAmount });
+    };
 
     const handleImage = (item) => {
         if (item.foodImages === undefined) return "https://via.placeholder.com/150";
         if (item.foodImages.length === 0) return "https://via.placeholder.com/150";
         return item.foodImages[0].url;
-    }
+    };
 
     const handleAddFood = async (item) => {
-        const {foodAmount, foodId, foodName, foodImages} = item;
+        const { foodId, servingId, servingSize } = item;
         const meal = {
             userId: 1,
             mealType: mealType,
-            day: mealDate,
+            mealDate: mealDate,
             foods: [
                 {
-                    foodId: item.foodId,
-                    quantity: parseInt(item.foodAmount)
+                    foodId,
+                    servingId,
+                    quantity: parseInt(servingSize)
                 }
             ]
-        }
+        };
+        console.log("meal on AddNewFood");
+        console.log(meal);
         const result = await mealModel.createMeal(meal);
-    }
+    };
+
+    const handleServingIdChange = (item, value) => {
+        const updatedFoods = searchResults.foods.map((food) =>
+            food.foodId === item.foodId ? { ...food, servingId: value } : food
+        );
+        setSearchResults((prevState) => ({ ...prevState, foods: updatedFoods }));
+    };
+
+    const handleServingSizeChange = (item, value) => {
+        const updatedFoods = searchResults.foods.map((food) =>
+            food.foodId === item.foodId ? { ...food, servingSize: value } : food
+        );
+        setSearchResults((prevState) => ({ ...prevState, foods: updatedFoods }));
+    };
 
     const renderPagination = () => {
-        const {totalResults, pageNumber} = searchResults;
+        const { totalResults, pageNumber } = searchResults;
         const totalPages = Math.ceil(totalResults / 10); // Assuming 10 results per page
         const pageNumbers = [];
 
@@ -92,7 +109,6 @@ export default function AddNewFood({mealType, mealDate}) {
 
         return (
             <div className="flex justify-center mt-4 border-t border-black pt-1">
-
                 {pageNumbers.map((page, index) =>
                     typeof page === "number" ? (
                         <button
@@ -108,19 +124,19 @@ export default function AddNewFood({mealType, mealDate}) {
                         </button>
                     ) : (
                         <span key={index} className="mx-2 py-2 px-4">
-                        {page}
-                    </span>
+                            {page}
+                        </span>
                     )
                 )}
-
             </div>
         );
     };
 
-
     return (
         <div className={"w-full my-2 min-h-96 p-4 rounded"}>
-            <h1 className={"text-left text-large font-bold text-gray-800 mt-4 mb-4"}>Add new food to your {mealType} on {mealDate}</h1>
+            <h1 className={"text-left text-large font-bold text-gray-800 mt-4 mb-4"}>
+                Add new food to your {mealType} on {mealDate}
+            </h1>
             <div className="flex flex-col w-full">
                 <div className="flex w-full">
                     <input
@@ -168,62 +184,56 @@ export default function AddNewFood({mealType, mealDate}) {
                 </h2>
             </div>
 
-
             <div className="max-h-96 overflow-y-auto mt-4">
-
-                {searchResults.foods && searchResults.foods.map((item, index) => (
-                    <div key={index} className={"flex items-center border-b border-gray-300 p-2"}>
-                        <div className={"w-1/6"}>
-                            <Image
-                                src={handleImage(item)}
-                                alt={item.name}
-                                width={150}
-                                height={150}
-                                className={"rounded"}
-                            />
-                        </div>
-                        <div className={"w-5/6 mx-1"}>
-                            <h2 className={"text-xl font-bold text-gray-800"}>{item.foodName}</h2>
-                            <div className={"flex flex-row justify-around"}>
-                                <select className={"p-2 border border-gray-300 rounded"}>
-                                    {item.servings && item.servings.map((serving, index) => (
-                                        <option key={index}
-                                                value={serving.servingDescription}>{serving.servingDescription}</option>
-                                    ))}
-                                </select>
-
-                                <div className={"flex items-center"}>
-                                    <input
-                                        className={"p-2 border border-gray-300 rounded max-w-20"}
-                                        type="number"
-                                        value={item.foodAmount}
-                                        onChange={(e) => {
-                                            const newAmount = e.target.value;
-                                            setSearchResults({
-                                                ...searchResults,
-                                                foods: searchResults.foods.map((food) => {
-                                                    if (food.foodId === item.foodId) {
-                                                        return {...food, foodAmount: newAmount};
-                                                    }
-                                                    return food;
-                                                }),
-                                            });
-                                        }}
-                                    />
-                                    <p className={"px-3"}>
-                                        {item.servings[0].calories} KCal
-                                    </p>
-                                    <button
-                                        className={"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"}
-                                        onClick={() => handleAddFood(item)}
+                {searchResults.foods &&
+                    searchResults.foods.map((item, index) => (
+                        <div key={index} className={"flex items-center border-b border-gray-300 p-2"}>
+                            <div className={"w-1/6"}>
+                                <Image
+                                    src={handleImage(item)}
+                                    alt={item.name}
+                                    width={150}
+                                    height={150}
+                                    className={"rounded"}
+                                />
+                            </div>
+                            <div className={"w-5/6 mx-1"}>
+                                <h2 className={"text-xl font-bold text-gray-800"}>{item.foodName}</h2>
+                                <div className={"flex flex-row justify-around"}>
+                                    <select
+                                        value={item.servingId}
+                                        onChange={(e) => handleServingIdChange(item, e.target.value)}
+                                        className={"p-2 border border-gray-300 rounded"}
                                     >
-                                        Add
-                                    </button>
+                                        {item.servings &&
+                                            item.servings.map((serving, index) => (
+                                                <option key={index} value={serving.servingId}>
+                                                    {serving.servingDescription}
+                                                </option>
+                                            ))}
+                                    </select>
+
+                                    <div className={"flex items-center"}>
+                                        <input
+                                            className={"p-2 border border-gray-300 rounded max-w-20"}
+                                            type="number"
+                                            value={item.servingSize}
+                                            onChange={(e) => handleServingSizeChange(item, e.target.value)}
+                                        />
+                                        <p className={"px-3"}>
+                                            {item.servings[0].calories} KCal
+                                        </p>
+                                        <button
+                                            className={"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"}
+                                            onClick={() => handleAddFood(item)}
+                                        >
+                                            Add
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
             </div>
             <div className={"my-2"}>
                 <p>

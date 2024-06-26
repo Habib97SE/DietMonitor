@@ -6,32 +6,43 @@ import AddNewFood from "./AddNewFood";
 export default function MealCalorieIntake() {
     const mealModel = new Meal();
 
-    const [meal, setMeal] = useState("BREAKFAST");
-    const [foods, setFoods] = useState([]);
+    const [mealType, setMealType] = useState("BREAKFAST");
+    const [meal, setMeal] = useState([])
     const [showAddFoodModal, setShowAddFoodModal] = useState(false);
     const [mealFound, setMealFound] = useState(false);
 
     const fetchMealsData = async (selectedMeal) => {
-        const day = "2023-03-03";
+        const day = "2024-06-24";
         const fetchedMeal = await mealModel.getMeals(1, day, selectedMeal);
+
         if (fetchedMeal.message !== "Meal not found") {
-            // empty array
-            setFoods([]);
-            setFoods(fetchedMeal.data.foods);
+            setMeal([])
+            setMeal(fetchedMeal.data.foods);
             setMealFound(true);
         } else {
-            setFoods([]);
+            setMeal([])
             setMealFound(false);
         }
     };
 
     useEffect(() => {
-        fetchMealsData(meal);
-    }, [meal]);
+        console.log(mealType);
+        fetchMealsData(mealType);
+    }, [mealType]);
 
     const handleOnChangeMealSelect = (event) => {
-        setMeal(event.target.value);
+        setMealType(event.target.value);
     };
+
+    const calculatePortionSize = (quantity, servingSize) => {
+        try {
+            quantity = parseInt(quantity);
+            servingSize = parseFloat(servingSize);
+            return quantity * servingSize;
+        } catch (error) {
+            return null;
+        }
+    }
 
     return (
         <div>
@@ -57,7 +68,7 @@ export default function MealCalorieIntake() {
             </div>
 
             <div className={"my-2"}>
-                <h3 className={"capitalize text-left text-xl font-bold"}>{meal}:</h3>
+                <h3 className={"capitalize text-left text-xl font-bold"}>{mealType}:</h3>
                 {mealFound ? (
                     <div>
                         <table className={"min-w-full text-left text-sm font-light text-surface dark:text-white"}>
@@ -65,30 +76,34 @@ export default function MealCalorieIntake() {
                                 className="border-b border-neutral-200 bg-gray-600 text-white font-medium dark:border-white/10 dark:bg-body-dark">
                             <tr>
                                 <th className={"text-left px-6 py-4"}>Food</th>
+                                <th className={"text-left px-6 py-4"}>Serving Size</th>
                                 <th className={"text-left px-6 py-4"}>Calories</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {foods.map((food, index) => (
-                                <tr
-                                    key={index}
-                                    className="border-b border-neutral-200 bg-black/[0.02] dark:border-white/10 font-bold">
-                                    <td className={"whitespace-wrap px-6 py-4 font-medium"}>{food.food.foodName}</td>
-                                    <td className={"whitespace-nowrap px-6 py-4 font-medium"}>{food.food.servings[0].calories} KCal</td>
+                            {meal.map((food, index) => (
+                                <tr key={index} className={"border-b border-neutral-200"}>
+                                    <td className={"px-6 py-4"}>{food.food.foodName}</td>
+                                    <td className={"px-6 py-4"}> {calculatePortionSize(food.quantity, food.serving.metricServingAmount)} {food.serving.metricServingUnit}</td>
+                                    <td className={"px-6 py-4"}>{food.totalCalories} KCal</td>
                                 </tr>
                             ))}
-                            <tr className="border-b border-neutral-200 bg-gray-600 text-white  dark:border-white/10">
-                                <td className={"whitespace-wrap px-6 py-4 font-medium"}>Total Calories</td>
-                                <td className={"whitespace-nowrap px-6 py-4 font-medium"}>{foods.reduce((acc, food) => acc + food.food.servings[0].calories, 0)}</td>
-                            </tr>
                             </tbody>
+                            <tfoot
+                                className="border-b border-neutral-200 bg-gray-600 text-white font-medium dark:border-white/10 dark:bg-body-dark"
+                            >
+                            <tr>
+                                <td className={"text-left px-6 py-4"} colSpan={2}>Total Calories</td>
+                                <td className={"text-left px-6 py-4"}>{meal.reduce((acc, food) => acc + food.totalCalories, 0)} KCal</td>
+                            </tr>
+                            </tfoot>
                         </table>
                     </div>
                 ) : (
                     <div
-                        className={"text center flex flex-col justify-center items-center text-gray-700 text-sm font-bold mb-2 bg-red-500 text-white py-4 px-3"}
+                        className={"text center flex flex-col justify-center items-center text-sm font-bold mb-2 bg-red-500 text-white py-4 px-3"}
                     >
-                        <p>You have not added any food to your {meal.toLowerCase()} meal yet.</p>
+                        <p>You have not added any food to your {mealType.toLowerCase()} meal yet.</p>
                     </div>
                 )}
                 <button
@@ -109,8 +124,8 @@ export default function MealCalorieIntake() {
                         X
                     </button>
                     <AddNewFood
-                        mealType={meal}
-                        mealDate={"2023-03-03"}
+                        mealType={mealType}
+                        mealDate={"2024-06-24"}
                     />
                 </div>
             </div>

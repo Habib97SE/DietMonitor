@@ -26,21 +26,12 @@ import ChangePassword from "@/app/components/profile/ChangePassword";
 import PersonalInformation from "@/app/components/profile/PersonalInformation";
 import HelperMethods from "../../utils/HelpMethods"
 import MealCalorieIntake from "@/app/components/profile/MealCalorieIntake";
+import ProgressChart from "@/app/components/profile/ProgressChart";
 
 ChartJS.register(LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend);
 
 export default function ProfilePage() {
-    // /profile
-    const userDetail = {
-        firstName: "John",
-        lastName: "Doe",
-        email: "john.doe@example.com",
-        phoneNumber: "1234567890",
-        dateOfBirth: "1997-09-10",
-        city: "Gothenburg",
-        country: "Sweden",
-        gender: "Male",
-    };
+
 
     const [calorieData, setCalorieData] = useState([]);
     const [weightData, setWeightData] = useState([]);
@@ -272,9 +263,7 @@ export default function ProfilePage() {
                                             <div
                                                 className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 leading-6">
                                                 <h2 className="text-lg font-bold mb-4">Weight Loss Progress</h2>
-                                                <div className="">
-                                                    <Line data={chartDataWeight}/>
-                                                </div>
+                                                <ProgressChart remainingCalories={300} totalCalories={2000} />
                                             </div>
                                         </div>
 
@@ -310,19 +299,13 @@ export default function ProfilePage() {
                                             className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
                                             <h2 className="text-lg font-bold mb-4">Calorie Intake Over Last 14 Days</h2>
                                             <div className="h-64">
-                                                <Line data={chartData}/>
+                                               <ProgressChart remainingCalories={0} totalCalories={2000} />
                                             </div>
                                         </div>
                                         <div
                                             className={"bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"}>
                                             <h2 className={"text-lg font-bold mb-4"}>Add new food</h2>
-                                            {/* A big plus sign in the middle, when user clicks on it, a modal should be shown up */}
-                                            <button
-                                                onClick={() => document.getElementById("addNewFood").classList.toggle("hidden")}
-                                                className="text-6xl text-blue-500 hover:text-blue-700 flex flex-row justify-center items-center w-full h-32"
-                                            >
-                                                +
-                                            </button>
+
                                         </div>
                                     </div>
                                 </Tab>
