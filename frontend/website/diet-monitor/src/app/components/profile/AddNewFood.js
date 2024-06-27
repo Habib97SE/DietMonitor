@@ -4,7 +4,7 @@ import Food from "@/models/Food";
 import Image from "next/image";
 import Meal from "@/models/Meal";
 
-export default function AddNewFood({ mealType, mealDate }) {
+export default function AddNewFood({ mealType, mealDate, mealAdded }) {
     const [searchResults, setSearchResults] = useState({});
     const foodModel = new Food();
     const mealModel = new Meal();
@@ -53,6 +53,11 @@ export default function AddNewFood({ mealType, mealDate }) {
         console.log("meal on AddNewFood");
         console.log(meal);
         const result = await mealModel.createMeal(meal);
+
+        if (result.error === "false") {
+            mealAdded(true);
+        }
+
     };
 
     const handleServingIdChange = (item, value) => {

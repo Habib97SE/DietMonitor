@@ -22,7 +22,7 @@ export default function RootLayout({children}) {
         <header>
             <NavBar/>
         </header>
-        <main className={"min-h-screen"}>
+        <main className={""}>
             {children}
         </main>
         <footer>

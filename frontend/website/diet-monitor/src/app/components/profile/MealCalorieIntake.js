@@ -10,10 +10,17 @@ export default function MealCalorieIntake() {
     const [meal, setMeal] = useState([])
     const [showAddFoodModal, setShowAddFoodModal] = useState(false);
     const [mealFound, setMealFound] = useState(false);
+    const [triggerUpdate, setTriggerUpdate] = useState(false);
+
+    // today's date in yyyy-MM-dd format
+    const today = new Date().toISOString().split("T")[0];
+
+    const mealAdded = () => {
+        setTriggerUpdate(!triggerUpdate);
+    }
 
     const fetchMealsData = async (selectedMeal) => {
-        const day = "2024-06-24";
-        const fetchedMeal = await mealModel.getMeals(1, day, selectedMeal);
+        const fetchedMeal = await mealModel.getMeals(1, today, selectedMeal);
 
         if (fetchedMeal.message !== "Meal not found") {
             setMeal([])
@@ -26,9 +33,9 @@ export default function MealCalorieIntake() {
     };
 
     useEffect(() => {
-        console.log(mealType);
         fetchMealsData(mealType);
-    }, [mealType]);
+        setTriggerUpdate(false);
+    }, [mealType, triggerUpdate]);
 
     const handleOnChangeMealSelect = (event) => {
         setMealType(event.target.value);
@@ -44,12 +51,18 @@ export default function MealCalorieIntake() {
         }
     }
 
+
     return (
         <div>
             <div className="relative">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="meal">
                     Select Meal
                 </label>
+                <p
+                    className="text-left text-sm font-bold"
+                >
+                    Today: {today}
+                </p>
                 <select
                     id="meal"
                     onChange={handleOnChangeMealSelect}
@@ -125,7 +138,8 @@ export default function MealCalorieIntake() {
                     </button>
                     <AddNewFood
                         mealType={mealType}
-                        mealDate={"2024-06-24"}
+                        mealDate={today}
+                        mealAdded={mealAdded}
                     />
                 </div>
             </div>

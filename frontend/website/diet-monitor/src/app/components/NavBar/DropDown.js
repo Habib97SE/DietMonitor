@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function DropDown() {
 
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-    const [userLoggedIn, setUserLoggedIn] = useState(false);
+    const [userLoggedIn, setUserLoggedIn] = useState(true);
     const toggleProfileMenu = () => {
         setProfileMenuOpen(!profileMenuOpen);
     };

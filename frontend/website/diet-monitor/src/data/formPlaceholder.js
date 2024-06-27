@@ -52,4 +52,42 @@ export const changePassword = {
     }
 }
 
-export default { loginForm}
+export const contactForm = {
+    name: {
+        placeholder: "Name",
+        type: "text",
+        required: true,
+        id: "name",
+        label: "Name",
+        name: "name"
+    },
+    email: {
+        placeholder: "Email",
+        type: "email",
+        required: true,
+        id: "email",
+        label: "Email",
+        name: "email"
+    },
+    message: {
+        placeholder: "Message",
+        type: "text",
+        required: true,
+        id: "message",
+        label: "Message",
+        name: "message"
+    },
+    agreement: {
+        type: "checkbox",
+        required: true,
+        id: "agreement",
+        label: "By checking this box, you agree to our terms and conditions.",
+        name: "agreement"
+    },
+    submitButton: {
+        text: "Send",
+        type: "submit",
+    }
+}
+
+export default {loginForm, changePassword}

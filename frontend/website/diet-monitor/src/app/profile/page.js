@@ -27,6 +27,7 @@ import PersonalInformation from "@/app/components/profile/PersonalInformation";
 import HelperMethods from "../../utils/HelpMethods"
 import MealCalorieIntake from "@/app/components/profile/MealCalorieIntake";
 import ProgressChart from "@/app/components/profile/ProgressChart";
+import CalorieIntakeChart from "@/app/components/profile/CalorieIntakeChart";
 
 ChartJS.register(LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend);
 
@@ -261,9 +262,27 @@ export default function ProfilePage() {
                                                 <ChangePassword/>
                                             </div>
                                             <div
-                                                className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 leading-6">
-                                                <h2 className="text-lg font-bold mb-4">Weight Loss Progress</h2>
-                                                <ProgressChart remainingCalories={300} totalCalories={2000} />
+                                                className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 leading-6 flex flex-col justify-between items-center">
+                                                <h2
+                                                    className="text-lg font-bold mb-4"
+                                                >Add your weight</h2>
+                                                <div className="flex items-center justify-between">
+                                                    <p>
+                                                        Add your weight here. You can add your weight daily or weekly to keep track of your weight.
+                                                    </p>
+                                                </div>
+                                                <div className="">
+                                                    <input
+                                                        type="number"
+                                                        className="w-1/2 py-3 px-2 border border-gray-300 rounded-bl rounded-tl"
+                                                        placeholder="Enter your weight"
+                                                    />
+                                                    <button
+                                                        className="bg-blue-400 text-white py-3 px-2 hover:bg-blue-500"
+                                                    >
+                                                        Add
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -295,13 +314,7 @@ export default function ProfilePage() {
                                             className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
                                             <MealCalorieIntake />
                                         </div>
-                                        <div
-                                            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                                            <h2 className="text-lg font-bold mb-4">Calorie Intake Over Last 14 Days</h2>
-                                            <div className="h-64">
-                                               <ProgressChart remainingCalories={0} totalCalories={2000} />
-                                            </div>
-                                        </div>
+                                        <CalorieIntakeChart />
                                         <div
                                             className={"bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"}>
                                             <h2 className={"text-lg font-bold mb-4"}>Add new food</h2>

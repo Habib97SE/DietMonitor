@@ -20,13 +20,16 @@ const ProgressChart = ({ totalCalories, remainingCalories }) => {
     });
 
     useEffect(() => {
+        const consumedCalories = totalCalories - remainingCalories;
+        const isOverConsumed = remainingCalories < 0;
+
         setData({
             labels: ['Consumed', 'Remaining'],
             datasets: [
                 {
-                    data: [totalCalories - remainingCalories, remainingCalories],
-                    backgroundColor: ['#4caf50', '#f44336'],
-                    hoverBackgroundColor: ['#66bb6a', '#e57373'],
+                    data: isOverConsumed ? [totalCalories, 0] : [consumedCalories, remainingCalories],
+                    backgroundColor: isOverConsumed ? ['#4caf50', '#f44336'] : ['#4caf50', '#f44336'],
+                    hoverBackgroundColor: isOverConsumed ? ['#66bb6a', '#e57373'] : ['#66bb6a', '#e57373'],
                     borderWidth: 0,
                 },
             ],
@@ -50,7 +53,7 @@ const ProgressChart = ({ totalCalories, remainingCalories }) => {
         <div className="w-1/2 mx-auto">
             <Doughnut data={data} options={options} />
             <div className="text-center text-xl font-bold">
-                {remainingCalories} kcal remaining
+                {remainingCalories < 0 ? `Over Consumed by ${Math.abs(remainingCalories)} kcal` : `${remainingCalories} kcal remaining`}
             </div>
         </div>
     );
